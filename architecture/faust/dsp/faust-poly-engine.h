@@ -146,6 +146,8 @@ class FaustPolyEngine {
             delete fDriver;
             delete fFinalDSP;
         }
+        
+        dsp* getDsp() { return fFinalDSP; }
 
         /*
          * start()
