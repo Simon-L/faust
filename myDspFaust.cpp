@@ -605,12 +605,15 @@ int main(int argc, char* argv[])
     dsp->start();
     
     mydsp* dspreal = dynamic_cast<mydsp*>(dsp->getDsp());
-    // dspreal->foobar();
     printf("ma.SR -> %d\n", dspreal->getSampleRate());
     
     printf("Type 'q' to quit\n");
     char c;
-    while ((c = getchar()) && (c != 'q')) { usleep(100000); }
+    while (c = getchar()) {
+        usleep(100000);
+        if (c == 'q') break;
+    }
+    
     dsp->stop();
     delete dsp;
 }
