@@ -94,8 +94,8 @@ struct ArrayVar : public virtual Garbageable {
     
 };
 
-// DSP or field name, type, size, size-in-bytes, reads, writes
-typedef std::tuple<std::string, std::string, int, int, int, int> MemoryLayoutItem;
+// DSP or field name, type, size, size-in-bytes, reads, writes, offset
+typedef std::tuple<std::string, std::string, int, int, int, int, int> MemoryLayoutItem;
 typedef std::vector<MemoryLayoutItem> MemoryLayoutType;
 
 class CodeContainer : public virtual Garbageable {

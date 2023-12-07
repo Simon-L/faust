@@ -1176,6 +1176,10 @@ bool global::processCmdline(int argc, const char* argv[])
             gMemoryManager = true;
             i += 1;
 
+        } else if (isCmd(argv[i], "-jml", "--json-memory-layout")) {
+            gJSONMemoryLayout = true;
+            i += 1;
+
         } else if (isCmd(argv[i], "-sd", "--simplify-diagrams")) {
             gSimplifyDiagrams = true;
             i += 1;

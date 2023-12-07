@@ -409,7 +409,7 @@ void CodeContainer::processFIR(void)
         // Init DSP
         DSP->instanceInit(44100);
      */
-    if (gGlobal->gMemoryManager) {
+    if (gGlobal->gMemoryManager || gGlobal->gJSONMemoryLayout) {
         {
             // Compute DSP struct arrays size
             StructInstVisitor struct_visitor;
@@ -431,14 +431,14 @@ void CodeContainer::processFIR(void)
                         // Subcontainer size
                         VariableSizeCounter struct_size(Address::kStruct);
                         it->generateDeclarations(&struct_size);
-                        fMemoryLayout.push_back(make_tuple(it->getClassName(), "kObj_ptr", 0, struct_size.fSizeBytes, 0, 0));
+                        fMemoryLayout.push_back(make_tuple(it->getClassName(), "kObj_ptr", 0, struct_size.fSizeBytes, 0, 0, -1));
                         
                         // Get the associated table size and access
                         pair<string, int> field = gGlobal->gTablesSize[it->getClassName()];
                         
                         // Check the table name memory description
                         MemoryDesc& decs = struct_visitor.getMemoryDesc(field.first);
-                        fMemoryLayout.push_back(make_tuple(field.first, Typed::gTypeString[decs.fType], 0, field.second, decs.fRAccessCount, 0));
+                        fMemoryLayout.push_back(make_tuple(field.first, Typed::gTypeString[decs.fType], 0, field.second, decs.fRAccessCount, 0, -1));
                     }
                 }
             }
@@ -477,7 +477,7 @@ void CodeContainer::processFIR(void)
                                                 // + 8 bytes for memory alignment
                                                 struct_size.fSizeBytes + 8 + 8,
                                                 read_access,
-                                                write_access));
+                                                write_access, -1));
             
             // Arrays inside the DSP object
             for (const auto& it : struct_visitor.getFieldTable()) {
@@ -487,7 +487,8 @@ void CodeContainer::processFIR(void)
                                                        it.second.fSize,
                                                        it.second.fSizeBytes,
                                                        it.second.fRAccessCount,
-                                                       it.second.fWAccessCount));
+                                                       it.second.fWAccessCount,
+                                                       struct_visitor.getFieldOffset(it.first)));
                 // Arrays have size > 1
                 } else if (it.second.fSize > 1) {
                     fMemoryLayout.push_back(make_tuple(it.first,
@@ -495,7 +496,8 @@ void CodeContainer::processFIR(void)
                                                         it.second.fSize,
                                                         it.second.fSizeBytes,
                                                         it.second.fRAccessCount,
-                                                        it.second.fWAccessCount));
+                                                        it.second.fWAccessCount,
+                                                        struct_visitor.getFieldOffset(it.first)));
                 }
             }
             
@@ -508,7 +510,7 @@ void CodeContainer::processFIR(void)
                     if (search_class.fFound) {
                         VariableSizeCounter struct_size(Address::kStruct);
                         it->generateDeclarations(&struct_size);
-                        fMemoryLayout.push_back(make_tuple(it->getClassName(), "kObj_ptr", 0, struct_size.fSizeBytes, 0, 0));
+                        fMemoryLayout.push_back(make_tuple(it->getClassName(), "kObj_ptr", 0, struct_size.fSizeBytes, 0, 0, -1));
                     }
                 }
             }

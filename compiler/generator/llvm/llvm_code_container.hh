@@ -78,7 +78,7 @@ class LLVMCodeContainer : public virtual CodeContainer {
 
         JSONInstVisitor<REAL> json_visitor2("", "", fNumInputs, fNumOutputs, fStructVisitor.getFieldOffset("fSampleRate"), "", "",
                                             FAUSTVERSION, gGlobal->printCompilationOptions1(), gGlobal->gReader.listLibraryFiles(),
-                                            gGlobal->gImportDirList, fStructVisitor.getStructSize(), path_index_table, MemoryLayoutType());
+                                            gGlobal->gImportDirList, fStructVisitor.getStructSize(), path_index_table, fMemoryLayout);
         generateUserInterface(&json_visitor2);
         generateMetaData(&json_visitor2);
 

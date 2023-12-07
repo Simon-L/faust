@@ -77,8 +77,8 @@ struct InstComplexity {
     }
 };
 
-// DSP or field name, type, size, size-in-bytes, reads, writes
-typedef std::tuple<std::string, std::string, int, int, int, int> MemoryLayoutItem;
+// DSP or field name, type, size, size-in-bytes, reads, writes, offset
+typedef std::tuple<std::string, std::string, int, int, int, int, int> MemoryLayoutItem;
 typedef std::vector<MemoryLayoutItem> MemoryLayoutType;
 typedef std::map<std::string, int> PathTableType;
 
@@ -513,6 +513,10 @@ class FAUST_API JSONUIReal : public PathBuilder, public Meta, public UIReal<REAL
                         JSON << "\"type\": \"" << std::get<1>(item) << "\", ";
                         JSON << "\"size\": " << std::get<2>(item) << ", ";
                         JSON << "\"size_bytes\": " << std::get<3>(item) << ", ";
+                        // Sneak in memory offset for floats and arrays
+                        if ((std::get<1>(item) == "kFloat_ptr") || (std::get<1>(item) == "kFloat")) {
+                            JSON << "\"offset\": " << std::get<6>(item) << ", ";
+                        }
                         JSON << "\"read\": " << std::get<4>(item) << ", ";
                         JSON << "\"write\": " << std::get<5>(item) << " }";
                         if (i < (fMemoryLayout.size() - 1)) JSON << ",";
