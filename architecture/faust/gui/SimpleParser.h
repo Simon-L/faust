@@ -408,7 +408,6 @@ static bool parseGlobalMetaData(const char*& p, std::string& key, std::string& v
 {
     const char* saved = p; // to restore position if we fail
     if (parseDQString(p, key)) {
-        std::cout << "----- PARSING.... key: " << key << std::endl;
         if (key == "meta") {
             return parseMetaData(p, metadatas);
         } else {

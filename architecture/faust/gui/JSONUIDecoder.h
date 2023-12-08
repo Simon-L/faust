@@ -212,7 +212,6 @@ struct FAUST_API JSONUIDecoderReal : public JSONUIDecoderBase {
         
         fDSPSize = getInt(meta_data1, "size");
         fNumInputs = getInt(meta_data1, "inputs");
-        std::cout << "numinputs JSONUIDecoder " << fNumInputs << std::endl;
         fNumOutputs = getInt(meta_data1, "outputs");
         fSRIndex = getInt(meta_data1, "sr_index");
         fDSPProxy = false;
