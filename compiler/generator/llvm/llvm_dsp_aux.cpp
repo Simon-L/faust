@@ -304,6 +304,12 @@ llvm_dsp* llvm_dsp_factory_aux::createDSPInstance(dsp_factory* factory_aux)
     checkDecoder();
     
     if (factory->getFactory()->getMemoryManager()) {
+        
+        factory->getFactory()->getMemoryManager()->begin(2);
+        factory->getFactory()->getMemoryManager()->info(fDecoder->getDSPSize(), -1, -1);
+        factory->getFactory()->getMemoryManager()->info(sizeof(llvm_dsp), -1, -1);
+        factory->getFactory()->getMemoryManager()->end();
+        
         dsp_imp* dsp = static_cast<dsp_imp*>(factory->getFactory()->allocate(fDecoder->getDSPSize()));
         return (dsp) ? new (factory->getFactory()->allocate(sizeof(llvm_dsp))) llvm_dsp(factory, dsp) : nullptr;
     } else {
