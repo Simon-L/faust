@@ -78,9 +78,20 @@ class LLVMCodeContainer : public virtual CodeContainer {
 
         JSONInstVisitor<REAL> json_visitor2("", "", fNumInputs, fNumOutputs, fStructVisitor.getFieldOffset("fSampleRate"), "", "",
                                             FAUSTVERSION, gGlobal->printCompilationOptions1(), gGlobal->gReader.listLibraryFiles(),
-                                            gGlobal->gImportDirList, fStructVisitor.getStructSize(), path_index_table, fMemoryLayout);
+                                            gGlobal->gImportDirList, fStructVisitor.getStructSize(), path_index_table, MemoryLayoutType());
         generateUserInterface(&json_visitor2);
         generateMetaData(&json_visitor2);
+
+        if (gGlobal->gLLVMJSONSwitch) {
+            JSONInstVisitor<REAL> json_visitor3("", "", fNumInputs, fNumOutputs, fStructVisitor.getFieldOffset("fSampleRate"), "", "",
+            FAUSTVERSION, gGlobal->printCompilationOptions1(), gGlobal->gReader.listLibraryFiles(),
+            gGlobal->gImportDirList, fStructVisitor.getStructSize(), path_index_table, fMemoryLayout);
+            generateUserInterface(&json_visitor3);
+            generateMetaData(&json_visitor3);
+            std::ofstream llvm_json_file(gGlobal->gMasterDirectory + "/" + "llvm-" + gGlobal->gMasterName + ".json");
+            llvm_json_file << json_visitor3.JSON();
+            llvm_json_file.close();
+        }
 
         llvm::BasicBlock* return_block = llvm::BasicBlock::Create(*fContext, "return_block", getJSON);
         llvm::ReturnInst::Create(*fContext, fCodeProducer->genStringConstant(json_visitor2.JSON(true)), return_block);

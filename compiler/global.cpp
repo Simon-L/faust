@@ -1176,8 +1176,8 @@ bool global::processCmdline(int argc, const char* argv[])
             gMemoryManager = true;
             i += 1;
 
-        } else if (isCmd(argv[i], "-jml", "--json-memory-layout")) {
-            gJSONMemoryLayout = true;
+        } else if (isCmd(argv[i], "-lj", "--llvm-json")) {
+            gLLVMJSONSwitch = true;
             i += 1;
 
         } else if (isCmd(argv[i], "-sd", "--simplify-diagrams")) {
@@ -1609,6 +1609,10 @@ bool global::processCmdline(int argc, const char* argv[])
     if (gArchFile != "" && ((gOutputLang == "wast") || (gOutputLang == "wasm") || (gOutputLang == "interp") ||
                             (gOutputLang == "llvm") || (gOutputLang == "fir"))) {
         throw faustexception("ERROR : -a can only be used with 'c', 'cpp', 'ocpp', 'rust' and 'cmajor' backends\n");
+    }
+    
+    if (gOutputLang != "llvm" && gLLVMJSONSwitch) {
+        throw faustexception("ERROR : -lj can only be used with the 'llvm' backend\n");
     }
 
     if (gClassName == "") {

@@ -162,7 +162,7 @@ struct global {
     bool gEnableFlag;             // -es option (0/1: 0 by default)
     bool gNoVirtual;              // -nvi option, when compiled with the C++ backend, does not add the 'virtual' keyword
     bool gMemoryManager;          // -mem option
-    bool gJSONMemoryLayout;          // -jml option
+    bool gLLVMJSONSwitch;          // -lj option
     bool gRangeUI;   // -rui option, whether to generate code to limit vslider/hslider/nentry values in [min..max] range
     bool gFreezeUI;  // -fui option, whether to freeze vslider/hslider/nentry to a given value (init value by default)
     int  gFTZMode;   // -ftz option, 0 = no (default), 1 = fabs based, 2 = mask based (fastest)

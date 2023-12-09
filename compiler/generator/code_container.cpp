@@ -409,7 +409,7 @@ void CodeContainer::processFIR(void)
         // Init DSP
         DSP->instanceInit(44100);
      */
-    if (gGlobal->gMemoryManager || gGlobal->gJSONMemoryLayout) {
+    if (gGlobal->gMemoryManager || gGlobal->gLLVMJSONSwitch) {
         {
             // Compute DSP struct arrays size
             StructInstVisitor struct_visitor;
