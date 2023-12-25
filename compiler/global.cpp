@@ -564,6 +564,7 @@ void global::reset()
     gGraphSwitch       = false;
     gDrawPSSwitch      = false;
     gDrawSVGSwitch     = false;
+    gLLVMJSONSwitch    = false;
     gVHDLTrace         = false;
     gVHDLFloatEncoding = false;
     gFPGAMemory        = 10000;
