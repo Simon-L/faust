@@ -573,6 +573,7 @@ void global::reset()
     gPrintDocSwitch    = false;
     gArchFile          = "";
     gExportDSP         = false;
+    gTemplatedDsp = false;
 
     gTimeout = 120;  // Time out to abort compiler (in seconds)
 
@@ -1482,6 +1483,11 @@ bool global::processCmdline(int argc, const char* argv[])
 
         } else if (isCmd(argv[i], "-diff", "--auto-differentiate")) {
             gAutoDifferentiate = true;
+            i += 1;
+
+        
+        } else if (isCmd(argv[i], "-tpl", "--templated")) {
+            gTemplatedDsp = true;
             i += 1;
 
         } else if (isCmd(argv[i], "-lm", "--local-machine") || isCmd(argv[i], "-rm", "--remote-machine") ||

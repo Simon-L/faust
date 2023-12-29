@@ -1,0 +1,41 @@
+#include "lua.hpp"
+
+std::string init_lua_code = R"(
+@init_lua_code@
+)";
+
+std::FILE* renderTemplate(FILE* FAUSTin, const char* FAUSTfilename, std::string fullpath)
+{
+    std::string dsp_content;
+    
+    int c; // Note: int, not char, required to handle EOF
+    while ((c = std::fgetc(FAUSTin)) != EOF) // Standard C I/O file reading loop
+    {
+        dsp_content.insert(dsp_content.end(), c);
+    }
+    rewind(FAUSTin);
+    
+    int error;
+    lua_State *L = luaL_newstate(); /* opens Lua */
+    luaL_openlibs(L); /* opens the standard libraries */
+    
+    lua_pushstring(L, dsp_content.c_str());
+    lua_setglobal(L, "dsp_content");
+    
+    error = luaL_dostring(L, init_lua_code.c_str());
+    if (error) {
+        fprintf(stderr, "%s\n", lua_tostring(L, -1));
+        lua_pop(L, 1); /* pop error message from the stack */
+    }
+        
+    lua_getglobal(L, "dsp_content");
+    const char* dsp_content_post = lua_tostring(L, 1); 
+    
+    std::FILE* post_file = std::tmpfile();
+    std::fputs(dsp_content_post, post_file);
+    std::rewind(post_file);
+    
+    lua_close(L);
+
+    return post_file;
+}

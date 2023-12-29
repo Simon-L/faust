@@ -143,6 +143,7 @@ struct global {
     bool gPrintJSONSwitch;      // -json option
     bool gPrintDocSwitch;       // -mdoc option
     bool gExportDSP;            // -e option
+    bool gTemplatedDsp;         // -tpl option
 
     // code generation options
     bool gVectorSwitch;       // -vec option

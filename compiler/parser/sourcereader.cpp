@@ -47,6 +47,7 @@
 #include "exception.hh"
 #include "global.hh"
 #include "Text.hh"
+#include "luatemplate.hh"
 
 using namespace std;
 
@@ -273,6 +274,11 @@ Tree SourceReader::parseFile(const char* fname)
         // Try to open local file
         string fullpath1;
         FILE* tmp_file = FAUSTin = fopenSearch(FAUSTfilename, fullpath1); // Keep file to properly close it
+        if (FAUSTin && gGlobal->gTemplatedDsp && (FAUSTfilename == gGlobal->gMasterDocument)) {
+            FILE* tpl_out = renderTemplate(FAUSTin, FAUSTfilename, fullpath1);
+            fclose(tmp_file);
+            tmp_file = FAUSTin = tpl_out;
+        }
         if (FAUSTin) {
             Tree res = parseLocal(fullpath1.c_str());
             fclose(tmp_file);
