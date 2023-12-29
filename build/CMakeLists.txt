@@ -296,6 +296,22 @@ if (INCLUDE_ITP OR ITPDYNAMIC)
 	add_subdirectory (interp)
 	set (SUBTARGETS ${SUBTARGETS} faustmachine)
 endif()
+if (INCLUDE_TEMPLATING)
+    # For convenience, fill string literal in luatemplate.hh with content from lua file
+    file(READ ${SRCDIR}/utils/init_code.lua init_lua_code)
+    configure_file(${SRCDIR}/utils/luatemplate.hh.in ${CMAKE_CURRENT_BINARY_DIR}/luatemplate.hh)
+    
+    target_include_directories (faust PRIVATE /usr/include/lua5.4/)
+    target_include_directories (faust PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories (dynamiclib PRIVATE /usr/include/lua5.4/)
+    target_include_directories (dynamiclib PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories (staticlib PRIVATE /usr/include/lua5.4/)
+    target_include_directories (staticlib PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    
+    target_link_libraries (dynamiclib PRIVATE lua5.4)
+    target_link_libraries (faust PRIVATE lua5.4)
+    target_link_libraries (staticlib PRIVATE lua5.4)
+endif()
 
 
 ####################################
