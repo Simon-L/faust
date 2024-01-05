@@ -417,14 +417,64 @@ end
 
 local etlua = etlua()
 
-local dsp_content_tpl = dsp_content
+if (not ... and dsp_content ~= nil) then
 
--- render template in place, variable will be used from c++ afterwards
-dsp_content = etlua.compile(dsp_content)({
-    --add variables to context here
-})
+    local dsp_content_pre = dsp_content
+
+    -- render template in place, variable will be used from c++ afterwards
+    dsp_content = etlua.compile(dsp_content)({
+        --add variables to context here
+    })
+    
+end
+
+function print_help()
+    print([[
+Usage: render_template.lua [-o out_file] [--out out_file] in_file.dsp
+       render_template.lua [--help] [-h] for usage information]])
+    os.exit()
+end
+
+if not ... and dsp_content == nil then
+    print_help()
+end
 
 if (...) then
-    print('dsp_content in lua:')
-    print(dsp_content)
+    local out_file = nil
+    for i,v in ipairs(arg) do
+        if (v == "--help" or v == "-h") then
+            print_help()
+        end
+        if (v == "--out" or v == "-o") then
+            if arg[i+1] ~= nil then
+                out_file = arg[i+1]
+            else
+                print_help()
+            end
+        end
+    end
+    
+    local in_file = io.open(arg[1], "rb")
+    if in_file == nil then
+        print_help()
+    end
+    local dsp_content = in_file:read "*a"
+    in_file:close()
+    
+    local dsp_content_pre = dsp_content
+    
+    -- render template in place, variable will be used from c++ afterwards
+    dsp_content = etlua.compile(dsp_content)({
+        --add variables to context here
+    })
+    
+    if out_file ~= nil then
+        local f = io.open(out_file, 'w')
+        f:write(dsp_content)
+        f:close()
+    else
+        io.write(dsp_content)
+    end
+    
+    
 end

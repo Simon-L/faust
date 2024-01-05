@@ -298,7 +298,7 @@ if (INCLUDE_ITP OR ITPDYNAMIC)
 endif()
 if (INCLUDE_TEMPLATING)
     # For convenience, fill string literal in luatemplate.hh with content from lua file
-    file(READ ${SRCDIR}/utils/init_code.lua init_lua_code)
+    file(READ ${SRCDIR}/utils/render_template.lua init_lua_code)
     configure_file(${SRCDIR}/utils/luatemplate.hh.in ${CMAKE_CURRENT_BINARY_DIR}/luatemplate.hh)
     
     target_include_directories (faust PRIVATE /usr/include/lua5.4/)
