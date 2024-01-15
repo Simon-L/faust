@@ -441,21 +441,30 @@ end
 
 if (...) then
     local out_file = nil
+    local in_file = nil
     for i,v in ipairs(arg) do
         if (v == "--help" or v == "-h") then
             print_help()
-        end
-        if (v == "--out" or v == "-o") then
+        elseif (v == "--out" or v == "-o") then
             if arg[i+1] ~= nil then
                 out_file = arg[i+1]
             else
+                print"Output file not provided"
                 print_help()
             end
+        else
+            in_file = v
         end
     end
     
-    local in_file = io.open(arg[1], "rb")
     if in_file == nil then
+        print"Input file not provided"
+        print_help()
+    end
+    
+    in_file = io.open(in_file, "rb")
+    if in_file == nil then
+        print"Cannot open input file"
         print_help()
     end
     local dsp_content = in_file:read "*a"
