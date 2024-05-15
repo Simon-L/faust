@@ -10,6 +10,8 @@ env:
 # Controls when the action will run.
 on:
   # Allows you to run this workflow manually from the Actions tab
+  workflow_call:
+
   workflow_dispatch:
     inputs:
       create_release:
