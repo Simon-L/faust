@@ -161,7 +161,7 @@ jobs:
           -DLLVM_PACKAGE_VERSION=${LLVM_PACKAGE_VERSION} -DLLVM_LIBS="${LLVM_LIBS}" \
           -DLLVM_LIB_DIR="${LLVM_LIB_DIR}" -DLLVM_INCLUDE_DIRS="${LLVM_INCLUDE_DIRS}" \
           -DLLVM_DEFINITIONS="${LLVM_DEFINITIONS}" -DLLVM_LD_FLAGS="${LLVM_LD_FLAGS}" \
-          -DBUILD_HTTP_STATIC=${BUILD_HTTP_STATIC} \
+          -DBUILD_HTTP_STATIC=${BUILD_HTTP_STATIC} -DCMAKE_INSTALL_PREFIX=pfx \
           -Bfaustdir .
         cmake --build faustdir --parallel 4 --verbose --target install
 
