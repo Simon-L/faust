@@ -9,6 +9,8 @@ env:
 
 # Controls when the action will run.
 on:
+  push:
+    branches: [ "mfx-gh-actions" ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_call:
 
@@ -16,10 +18,10 @@ on:
     inputs:
       do-build-windows:
         type: boolean
-        default: false
+        default: true
       do-build-macos:
         type: boolean
-        default: false
+        default: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -120,11 +122,14 @@ jobs:
    #   uses: mxschmitt/action-tmate@v3
     #  env:
      #   LLVM_PACKAGE_VERSION: 17.0.6
-
+    - name: Set sha variable
+      id: sha
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
     - name: Upload Faust artifact
       uses: actions/upload-artifact@v4
       with:
-        name: pfx-win64
+        name: faust-windows-${{ steps.sha.outputs.sha_short }}
         path: build/build/faust/
 
   build-macos:
@@ -280,11 +285,14 @@ jobs:
 
     #- name: Setup tmate session
     #  uses: mxschmitt/action-tmate@v3
+    - name: Set sha variable
+      id: sha
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
     - name: Upload Faust artifact
       uses: actions/upload-artifact@v4
       with:
-        name: pfx
+        name: faust-macos-${{ steps.sha.outputs.sha_short }}
         path: build/pfx/
         # if-no-files-found: error
 
