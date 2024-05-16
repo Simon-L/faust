@@ -63,6 +63,7 @@ jobs:
     - name: Build libfaust
       shell: cmd
       run: |
+        cd build
         SET VERSION=2.74.2
         SET MYPATH=%cd%
         SET "MYPATH=%MYPATH:\=/%"
