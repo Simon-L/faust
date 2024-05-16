@@ -58,20 +58,73 @@ jobs:
     # - name: Download libmicrohttpd
     #   run: |
     #     curl -L https://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-latest-w32-bin.zip -o libmicrohttpd.zip
-    #     7z x libmicrohttpd.zip -y
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      env:
-        LLVM_PACKAGE_VERSION: 17.0.6
+    #     7z x libmicrohttpd.zip -y    
       
     - name: Build libfaust
       shell: cmd
       run: |
+        SET VERSION=2.74.2
+        SET MYPATH=%cd%
+        SET "MYPATH=%MYPATH:\=/%"
+        SET BUILD=%MYPATH%/build
+        SET LLVM_CONFIG_A="%MYPATH%/../llvm/bin/llvm-config.exe"
+        SET LLVM_CONFIG_B="%MYPATH%/../../llvm/bin/llvm-config.exe"
+        SET LIBSNDFILE_A="%MYPATH%/../libsndfile"
+        SET LIBSNDFILE_B="%MYPATH%/../../libsndfile"
+        SET VS_REDIST=%VCToolsRedistDir%vc_redist.x64.exe
+        SET "VS_REDIST=%VS_REDIST:\=/%"
+        IF EXIST %LLVM_CONFIG_A% (
+            SET LLVM_CONFIG=%LLVM_CONFIG_A%
+            echo llvm-config.exe found at %LLVM_CONFIG%
+        ) ELSE (
+            IF EXIST %LLVM_CONFIG_B% (
+                SET LLVM_CONFIG=%LLVM_CONFIG_B%
+                echo llvm-config.exe found at %LLVM_CONFIG%
+            ) ELSE (
+                echo llvm-config.exe not found at %LLVM_CONFIG_A% or %LLVM_CONFIG_B%
+                EXIT /B
+            )
+        )
+        IF EXIST %LIBSNDFILE_A% (
+            SET LIBSNDFILE=%LIBSNDFILE_A%
+            echo libsndfile install found at %LIBSNDFILE%
+        ) ELSE (
+            IF EXIST %LIBSNDFILE_B% (
+                SET LIBSNDFILE=%LIBSNDFILE_B%
+                echo libsndfile install found at %LIBSNDFILE%
+            ) ELSE (
+                echo libsndfile install not found at %LIBSNDFILE_A% or %LIBSNDFILE_B%
+                EXIT /B
+            )
+        )
+        if not exist "%VS_REDIST%" (
+            echo "Windows Redistributables were not found at location: %VS_REDIST%"
+            EXIT /B 1
+        )
+        echo "Building Faust version: %VERSION%"
+        echo "VS_REDIST is %VS_REDIST%"
+        echo "Using build folder %BUILD%"
+        echo "Make sure that faust submodules are up-to-date"
+        echo "###################### Building Faust package ######################"
+        mkdir build
         cd build
-        call MakeRelease.bat
+        cmake -C ..\backends\mfx.cmake -C ../targets/all-win64.cmake -DUSE_LLVM_CONFIG=ON -DLLVM_CONFIG="%LLVM_CONFIG%" -DCMAKE_INSTALL_PREFIX=faust -Ax64 ..
+        cmake --build . --config Release --  /maxcpucount:4 --verbose
+        cmake --build . --config Release --target install --verbose
+        echo DONE VERSION %VERSION%
       env:
         LLVM_PACKAGE_VERSION: 17.0.6
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      env:
+        LLVM_PACKAGE_VERSION: 17.0.6
+
+    - name: Upload Faust artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pfx-win64
+        path: build/build/faust/
 
   build-macos:
     if: ${{ inputs.do-build-macos }}
