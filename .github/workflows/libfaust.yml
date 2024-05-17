@@ -25,6 +25,53 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  build-ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-x86_64
+            os: ubuntu-22.04
+            cmake-options: >-
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_VERBOSE_MAKEFILE=ON
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y zstd libncurses-dev libxml2-dev
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y libllvm15 llvm-15 llvm-15-dev libsndfile1-dev
+
+    - name: Build libfaust
+      run: |
+        find /usr -name llvm-config
+        export PATH="/usr/lib/llvm-15/bin:$PATH"
+        export LLVM_ROOT=$(llvm-config --prefix | tr '\n' ' ')
+        echo "LLVM_ROOT: " $LLVM_ROOT
+        cd build
+        cmake -C ./backends/mfx.cmake -C ./targets/all.cmake . -Bbuild ${{matrix.cmake-options}} -DCMAKE_INSTALL_PREFIX=faust -DINCLUDE_DYNAMIC=ON -DINCLUDE_STATIC=ON -DINCLUDE_LLVM=ON -DUSE_LLVM_CONFIG=ON
+        cmake --build build --config Release --parallel 4 --verbose
+        cmake --build build --config Release --target install --verbose
+    
+    - name: Set sha variable
+      id: sha
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
+    - name: Upload Faust artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: faust-ubuntu-${{ steps.sha.outputs.sha_short }}
+        path: build/faust/
+        
   build-windows:
     #if: ${{ inputs.do-build-windows || true }}
     runs-on: ${{ matrix.os }}
@@ -112,7 +159,7 @@ jobs:
         mkdir build
         cd build
         cmake -C ..\backends\mfx.cmake -C ../targets/all-win64.cmake -DUSE_LLVM_CONFIG=ON -DLLVM_CONFIG="%LLVM_CONFIG%" -DCMAKE_INSTALL_PREFIX=faust -Ax64 ..
-        cmake --build . --config Release --  /maxcpucount:4 --verbose
+        cmake --build . --config Release --verbose --  /maxcpucount:4
         cmake --build . --config Release --target install --verbose
         echo DONE VERSION %VERSION%
       env:
@@ -296,19 +343,3 @@ jobs:
         name: faust-macos-${{ steps.sha.outputs.sha_short }}
         path: build/pfx/
         # if-no-files-found: error
-
-    # - name: Upload Faust source artifact
-    #   if: ${{ endsWith( matrix.name, 'arm64') }}
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: faust-${{env.FAUST_VERSION}}.tar.gz
-    #     path: build/Release-${{env.FAUST_VERSION}}/faust-${{env.FAUST_VERSION}}.tar.gz
-    #     if-no-files-found: error
-    # 
-    # - name: Upload faustgen~ artifact
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: faustgen-${{env.FAUSTGEN_VERSION}}-${{ matrix.name }}.dmg
-    #     path: build/Release-${{env.FAUST_VERSION}}/faustgen-${{env.FAUSTGEN_VERSION}}-${{matrix.name}}.dmg
-    #     if-no-files-found: error
-
