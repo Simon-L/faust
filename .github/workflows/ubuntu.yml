@@ -19,4 +19,12 @@ jobs:
         sudo apt-get install libmicrohttpd-dev
 
     - name: Build Faust
-      run: make
+      run: |
+        PREFIX=$(pwd)/build/pfx make
+        PREFIX=$(pwd)/build/pfx make install
+
+    - name: Upload install prefix artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pfx
+        path: build/pfx

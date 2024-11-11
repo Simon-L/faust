@@ -93,11 +93,11 @@ endif
 #===============================================================
 # main targets
 all: $(PROJ)
-	$(CMAKE) --build $(FAUSTDIR) $(BUILDOPT) 
+	$(CMAKE) --build $(FAUSTDIR) $(BUILDOPT) --parallel $(nproc)
 
 full:
-	$(MAKE) cmake BACKENDS=all.cmake TARGETS=all.cmake 
-	$(CMAKE) --build $(FAUSTDIR) $(BUILDOPT) 
+	$(MAKE) cmake BACKENDS=all.cmake TARGETS=all.cmake
+	$(CMAKE) --build $(FAUSTDIR) $(BUILDOPT)
 
 clean:
 	$(CMAKE) --build $(FAUSTDIR) --target clean
